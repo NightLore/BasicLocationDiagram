@@ -1,18 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        body {
+            margin: 0;
+        }
+        
+        #container {
+            position: absolute; 
+            width: 100%; 
+            height: 100%;
+        }
+        
+        #title {
+            color: white;
+        }
+        
+        #diagram_canvas {
+            position: absolute; 
+            background-color: gray; 
+            z-index: -1; 
+            width: 100%; 
+            height: 100%;
+        }
+        
+        #overlay {
+            position: absolute; 
+            width: 100%; 
+            height: 100%;
+        }
+        
+        #right_overlay {
+            float: right; 
+            background-color: lightgoldenrodyellow; 
+            width: 20%; 
+            height: 100%;
+        }
+    </style>
     <title>Basic Location Diagram</title>
     <script type="text/javascript" src="diagram.js"></script>
+    <script>
+        function setBackground() {
+            
+        }
+        
+        function addPoint() {
+            
+        }
+    </script>
 </head>
 <body>
-    <div>
-        <h1>Basic Location Diagram</h1>
-    </div>
 	<div id="container">
-		<canvas id="diagram" style="width: 100%; height: 100%; position:relative;" width="1280" height="720">
-			<p>Unfortunately your browser does not support HTML5 canvases</p>
-		</canvas>
-		<div id="overlay"></div>
+        <canvas id="diagram_canvas">
+            <p>Unfortunately your browser does not support HTML5 canvases</p>
+        </canvas>
+		<div id="overlay">
+            <div>
+                
+            </div>
+            <div id="right_overlay" align="center">
+                <button type="button" onclick="setBackground();">Set Background</button>
+                <button type="button" onclick="addPoint();">Add Point</button>
+            </div>
+            <div id="title">
+                <h1>Basic Location Diagram</h1>
+            </div>
+        </div>
 	</div>
 </body>
 </html>
