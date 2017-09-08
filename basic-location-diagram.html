@@ -1,65 +1,166 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            margin: 0;
-        }
-        
-        #container {
-            position: absolute; 
-            width: 100%; 
-            height: 100%;
-        }
-        
-        #title {
-            color: white;
-        }
-        
-        #diagram_canvas {
-            position: absolute; 
-            background-color: gray; 
-            z-index: -1; 
-            width: 100%; 
-            height: 100%;
-        }
-        
-        #overlay {
-            position: absolute; 
-            width: 100%; 
-            height: 100%;
-        }
-        
-        #right_overlay {
-            float: right; 
-            background-color: lightgoldenrodyellow; 
-            width: 20%; 
-            height: 100%;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="basic-location-diagram.css">
     <title>Basic Location Diagram</title>
-    <script type="text/javascript" src="diagram.js"></script>
+    <script> // utility functions
+        
+        function isInt(value) {
+            if (isNaN(value)) return false;
+            var x = parseFloat(value);
+            return (x | 0) === x;
+        }
+        
+    </script>
+    <script type="text/javascript" src="circle.js"></script>
+    <script type="text/javascript" src="ui_base.js"></script>
+    <script type="text/javascript" src="button.js"></script>
+    <script type="text/javascript" src="sprite.js"></script>
+    <script type="text/javascript" src="engine.js"></script>
     <script>
-        function setBackground() {
+        var points = [];
+        var ENTER = 13;
+        // --------------------------------------------------------------- //
+        window.onload = function() {
+            setupVariables('diagram_canvas');
+            setupInput();
             
+            var d1 = document.createElement('div');
+            var s1 = createPointIntegerInput(origin,'span','x','x','20%',true,true);
+            var s2 = createPointIntegerInput(origin,'span','y','y','20%',true,true);
+            
+            var s3 = document.createElement('span');
+            s3.appendChild(document.createTextNode('....'));
+            s3.style.visibility = "hidden";
+            
+            d1.appendChild(s1);
+            d1.appendChild(s3);
+            d1.appendChild(s2);
+            
+            document.getElementById('origin').appendChild(d1);
+        }
+        
+        function resetBackgroundField(textfield) {
+            textfield.value = document.getElementById('overlay').style.backgroundColor;
+        }
+        
+        function setBackground(textfield, element) {
+            if (event.keyCode == ENTER) {
+                element.style.backgroundColor = textfield.value;
+            }
         }
         
         function addPoint() {
+            var point_num = points.length;
             
+            var p = new Sprite();
+            p.index = point_num;
+            points.push(p);
+            
+            var title = document.createTextNode('Point ' + (point_num + 1) + ': ');
+            
+            var d1 = document.createElement('div');
+            var s1 = createPointIntegerInput(p,'span','x','x','20%',true,true);
+            var s2 = createPointIntegerInput(p,'span','y','y','20%',true,true);
+            
+            var s3 = document.createElement('span');
+            s3.appendChild(document.createTextNode('....'));
+            s3.style.visibility = "hidden";
+            
+            d1.appendChild(s1);
+            d1.appendChild(s3);
+            d1.appendChild(s2);
+            
+            var pointDiv = document.createElement('div');
+            pointDiv.appendChild(title);
+            pointDiv.appendChild(d1);
+            pointDiv.appendChild(createPointIntegerInput(p,'div','Radius','radius','40%',true,true));
+            pointDiv.appendChild(createPointInput(p,'div','Set Color','fillColor','40%',true));
+            pointDiv.appendChild(document.createElement('br'));
+            document.getElementById('points').appendChild(pointDiv);
+            
+            update();
+        }
+        
+        function createPointInput(p, container, text, value, width, keyup, blur) {
+            var c = document.createElement(container);
+            var t = document.createTextNode(text + ': ');
+            var i = document.createElement('input');
+            i.style.width = width;
+            i.value = p[value];
+            if (keyup) {
+                if (typeof keyup != 'function') {
+                    keyup = function(e) {
+                        if (e.keyCode == ENTER) {
+                            p[value] = i.value;
+                            alert(JSON.stringify(p));
+                        }
+                    };
+                }
+                i.addEventListener('keyup', keyup);
+            }
+            if (blur) {
+                if (typeof blur != 'function') {
+                    blur = function(e) {
+                        p[value] = i.value;
+                        update();
+                    }
+                }
+                i.addEventListener('blur', blur);
+            }
+            c.appendChild(t);
+            c.appendChild(i);
+            return c;
+        }
+        
+        function createPointIntegerInput(p,container, text, value, width, keyup, blur) {
+            var c = createPointInput(p, container, text, value, width);
+            var i = c.getElementsByTagName('input')[0];
+            if (keyup) {
+                if (typeof keyup != 'function') {
+                    keyup = function(e) {
+                        if (e.keyCode == ENTER) {
+                            if (isInt(i.value)) {
+                                p[value] = i.value;
+                                update();
+                            }
+                        }
+                    };
+                }
+                i.addEventListener('keyup', keyup);
+            }
+            if (blur) {
+                if (typeof blur != 'function') {
+                    blur = function(e) {
+                        if (isInt(i.value)) 
+                            p[value] = i.value;
+                        else
+                            i.value = p[value];
+                        update();
+                    }
+                }
+                i.addEventListener('blur', blur);
+            }
+            return c;
         }
     </script>
 </head>
 <body>
 	<div id="container">
-        <canvas id="diagram_canvas">
-            <p>Unfortunately your browser does not support HTML5 canvases</p>
-        </canvas>
-		<div id="overlay">
-            <div>
-                
+            <div id="canvas_div">
+                <canvas id="diagram_canvas">
+                    <p>Unfortunately your browser does not support HTML5 canvases</p>
+                </canvas>
             </div>
+		<div id="overlay">
             <div id="right_overlay" align="center">
-                <button type="button" onclick="setBackground();">Set Background</button>
+                <br>
+                Set Background: <input id="setBackground" type="text" name="setBackground" placeholder="Valid Html Color" value="dimgray" onkeydown="setBackground(this, document.getElementById('overlay'));" onblur="resetBackgroundField(this);">
+                <br><br>
+                Set Origin: 
+                <div id="origin"></div>
+                <br>
+                <div id="points"></div>
                 <button type="button" onclick="addPoint();">Add Point</button>
             </div>
             <div id="title">

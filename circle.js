@@ -1,4 +1,3 @@
-'use strict';
 
 var Circle = function(x, y, radius) {
     this.set(x, y, radius);
