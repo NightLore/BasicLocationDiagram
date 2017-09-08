@@ -12,7 +12,7 @@ var Button = function(x, y, radius) {
     this.hoverColor = "rgb(80, 180, 150)";
     this.fillColor = "rgb(50, 150, 130)";
     this.fontSize = 20;
-    this.fontFamily = "Hanken Round";
+//    this.fontFamily = "Hanken Round";
     this.textColor = "rgb(255, 255, 255)";
 }
  
@@ -62,9 +62,9 @@ Button.prototype.drawText = function(canvas) {
     {
         //text options
         canvas.fillStyle = this.textColor;
-        canvas.strokeStyle = "rgb(50,50,50)";
-        canvas.lineWidth = 1;
-        canvas.font = 800 + " " + this.fontSize + "px " + this.fontFamily;
+//        canvas.strokeStyle = "rgb(50,50,50)";
+//        canvas.lineWidth = 1;
+        canvas.font = 500 + " " + this.fontSize + "px " + this.fontFamily;
      
         //text position
         // var textSize = canvas.measureText(this.text);
@@ -74,6 +74,6 @@ Button.prototype.drawText = function(canvas) {
         canvas.textBaseline = this.textBaseline || "middle";
         //draw the text
         canvas.fillText(this.text, textX, textY);
-        canvas.strokeText(this.text, textX, textY);
+//        canvas.strokeText(this.text, textX, textY);
     }
 }
