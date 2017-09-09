@@ -20,11 +20,14 @@
     <script>
         var points = [];
         var ENTER = 13;
+        var selected = false;
         // --------------------------------------------------------------- //
         window.onload = function() {
             setupVariables('diagram_canvas');
-            setupInput();
+            setupInput(document);
+//            setupInput(canvas);
             
+            // ------------------- initialize right overlay ------------------- //
             var d1 = document.createElement('div');
             var s1 = createPointIntegerInput(origin,'span','x','x','20%',true,true);
             var s2 = createPointIntegerInput(origin,'span','y','y','20%',true,true);
@@ -53,9 +56,12 @@
         function addPoint() {
             var point_num = points.length;
             
-            var p = new Sprite();
+            var p = new Sprite(origin.x, origin.y);
             p.index = point_num;
             p.text = "Point " + (point_num + 1);
+            p.handler[0] = function() {
+                selected = (selected === p) ? false : p;
+            }
             points.push(p);
             
             var title = document.createTextNode('Point ' + (point_num + 1) + ': ');
@@ -122,7 +128,7 @@
                     keyup = function(e) {
                         if (e.keyCode == ENTER) {
                             if (isInt(i.value)) {
-                                p[value] = i.value;
+                                p[value] = parseFloat(i.value);
                                 update();
                             }
                         }
@@ -134,7 +140,7 @@
                 if (typeof blur != 'function') {
                     blur = function(e) {
                         if (isInt(i.value)) 
-                            p[value] = i.value;
+                            p[value] = parseFloat(i.value);
                         else
                             i.value = p[value];
                         update();
@@ -167,6 +173,7 @@
             <div id="title">
                 <h1>Basic Location Diagram</h1>
             </div>
+            <div id="mouse_coordinates"></div>
         </div>
 	</div>
 </body>

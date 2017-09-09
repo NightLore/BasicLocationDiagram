@@ -6,6 +6,9 @@ var setupVariables = function(c) {
         clicked: [false, false, false],
         down: [false, false, false]
     };
+    mouse_coords = document.createTextNode("0,0");
+    document.getElementById('mouse_coordinates').appendChild(mouse_coords);
+    
     canvas = document.getElementById(c);
     context2D = canvas.getContext('2d');
     var div = document.getElementById('canvas_div');
@@ -17,22 +20,23 @@ var setupVariables = function(c) {
     }
 }
 
-var setupInput = function() {
+var setupInput = function(element) {
 
-    canvas.addEventListener("mousemove", function(e) {
-        var pos = getMousePos(canvas,e);
-        mouse.x = pos.x;
-        mouse.y = pos.y;
+    element.addEventListener('mousemove', function(e) {
+//        var pos = getMousePos(canvas,e);
+        mouse.x = Math.round(e.clientX - canvas.width/2 + origin.x);
+        mouse.y = Math.round(e.clientY - canvas.height/2 + origin.y);
+        mouse_coords.nodeValue = mouse.x + "," + mouse.y;
         update();
     });
 
-    canvas.addEventListener("mousedown", function(e) {
+    element.addEventListener('mousedown', function(e) {
         mouse.clicked[e.which-1] = !mouse.down[e.which-1];
         mouse.down[e.which-1] = true;
         update();
     });
 
-    canvas.addEventListener("mouseup", function(e) {
+    element.addEventListener('mouseup', function(e) {
         mouse.down[e.which-1] = false;
         mouse.clicked[e.which-1] = false;
         update();
@@ -83,10 +87,12 @@ var draw = function() {
 //                    this.cam.y = clamp(this.cam.y, -this.world.bottomSide() + this.canvas.height, -this.world.topSide());
 //                }
 //            }
-    context2D.translate( origin.x, origin.y );
-    context2D.translate( canvas.width/2, canvas.height/2 );
+    context2D.translate( canvas.width/2 - origin.x, canvas.height/2 - origin.y );
 
+    if (selected) {
+        selected.drawDistances(context2D,points);
+    }
     for (var i = 0; i < points.length; i++) {
-        points[i].draw(context2D);
+        points[i].draw(context2D,points);
     }
 }

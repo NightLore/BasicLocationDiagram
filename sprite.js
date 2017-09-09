@@ -14,24 +14,53 @@ Sprite.prototype = Object.create(Button.prototype);
 Sprite.prototype.constructor = Sprite;
 Sprite._super = Object.getPrototypeOf(Sprite.prototype);
 
-Sprite.prototype.draw = function(canvas) {
+Sprite.prototype.draw = function(ctx,points) {
 	this._textX = this.x;
 	this._textY = this.topSide();
-	Sprite._super.draw.call(this,canvas);
-	this.drawHp(canvas);
+	Sprite._super.draw.call(this,ctx);
+    if (this.hovered) {
+        this.drawDistances(ctx,points);
+    }
+	this.drawHp(ctx);
 }
 
-Sprite.prototype.drawHp = function(canvas) {
+Sprite.prototype.drawHp = function(ctx) {
 	if (!this.damagable || this.hp === this.maxHp || this.hp <= 0) return;
 	var x = this.leftSide();
 	var y = this.bottomSide();
 	var w = this.radius * 2;
 	var h = 7;
 	var offset = 1;
-	canvas.fillStyle = "rgb(100,100,100)";
-	canvas.fillRect(x-offset,y-offset,w+offset*2,h+offset*2);
-	canvas.fillStyle = "rgb(0,200,0)";
-	canvas.fillRect(x,y,Math.floor(this.hp*w/this.maxHp),h);
+	ctx.fillStyle = "rgb(100,100,100)";
+	ctx.fillRect(x-offset,y-offset,w+offset*2,h+offset*2);
+	ctx.fillStyle = "rgb(0,200,0)";
+	ctx.fillRect(x,y,Math.floor(this.hp*w/this.maxHp),h);
+}
+
+Sprite.prototype.drawDistances = function(ctx, points) {
+    var text = this.text;
+    for (var i = 0; i < points.length; i++) {
+        var p = points[i];
+        if (p === this)
+            continue;
+        var g = ctx.createLinearGradient(this.x,this.y,p.x,p.y);
+        g.addColorStop(0,this.fillColor);
+        g.addColorStop(1,p.fillColor);
+        
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = g;
+        ctx.moveTo(this.x,this.y);
+        ctx.lineTo(p.x,p.y);
+
+        ctx.stroke();
+        // set up settings for the text
+        this.text = "" + Math.round(this.getDistance(p)*100)/100; // round to 2 decimal places (Note: exponential notation has higher accuracy)
+        this._textX = (this.x + p.x) / 2;
+        this._textY = (this.y + p.y) / 2;
+        this.drawText(ctx);
+    }
+    this.text = text;
 }
 
 Sprite.prototype.setStats = function(maxHp,atk) {

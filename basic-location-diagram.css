@@ -44,3 +44,10 @@ body {
     width: 80%;
     height: 100%;
 }
+
+#mouse_coordinates {
+    color: white;
+    position: fixed;
+    bottom: 3px;
+    padding-left: 1%;
+}

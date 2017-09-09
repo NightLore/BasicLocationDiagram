@@ -37,43 +37,43 @@ Button.prototype.update = function(mouse) {
     }
 }
 
-Button.prototype.draw = function(canvas) {
+Button.prototype.draw = function(ctx) {
 	if ( this.image )
 	{
 	    var img = this.hovered && this.hoverImage ? this.hoverImage : this.image; // choose an image
         var imageX = this.leftSide() - img.width + this.radius * 2;
         var imageY = this.topSide() - img.height + this.radius * 2;
-	    canvas.drawImage(img,imageX,imageY); // draw button
+	    ctx.drawImage(img,imageX,imageY); // draw button
 	}
 	else
 	{
 	    var style = this.hovered && this.hoverColor ? this.hoverColor : this.fillColor; // set color
-        Circle.fill(canvas,this,style);
+        Circle.fill(ctx,this,style);
         if ( this.strokeStyle )
         {
-            Circle.stroke(canvas,this,this.strokeStyle,this.strokeWidth);
+            Circle.stroke(ctx,this,this.strokeStyle,this.strokeWidth);
         }
 	}
-    this.drawText(canvas);
+    this.drawText(ctx);
 }
 
-Button.prototype.drawText = function(canvas) {
+Button.prototype.drawText = function(ctx) {
     if ( this.text )
     {
         //text options
-        canvas.fillStyle = this.textColor;
-//        canvas.strokeStyle = "rgb(50,50,50)";
-//        canvas.lineWidth = 1;
-        canvas.font = 500 + " " + this.fontSize + "px " + this.fontFamily;
+        ctx.fillStyle = this.textColor;
+//        ctx.strokeStyle = "rgb(50,50,50)";
+//        ctx.lineWidth = 1;
+        ctx.font = 500 + " " + this.fontSize + "px " + this.fontFamily;
      
         //text position
-        // var textSize = canvas.measureText(this.text);
+        // var textSize = ctx.measureText(this.text);
         var textX = this.textX || this._textX || this.x; // - (textSize.width / 2);
         var textY = this.textY || this._textY || this.y;// - (fontSize/2);
-        canvas.textAlign = this.textAlign || "center";
-        canvas.textBaseline = this.textBaseline || "middle";
+        ctx.textAlign = this.textAlign || "center";
+        ctx.textBaseline = this.textBaseline || "middle";
         //draw the text
-        canvas.fillText(this.text, textX, textY);
-//        canvas.strokeText(this.text, textX, textY);
+        ctx.fillText(this.text, textX, textY);
+//        ctx.strokeText(this.text, textX, textY);
     }
 }
